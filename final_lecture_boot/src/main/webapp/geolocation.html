@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+</head>
+<body>
+<input type="button" value="위치추적시작" id="start">
+<input type="button" value="위치추적종료" id="stop">
+<div id="result"></div>
+<script>
+/* 위치 - pc, 노트북, 패트, 폰 실행 - 위치추적 가능 기기
+ * 		폰 = 이동통신사 기지국 정보 + GPS
+ 		패드 = GPS
+ 		PC, 노트북 = 유선/무선(WIFI)
+ 		GPS > 기지국 > WIFI > 유선 네트워크
+ 		브라우저 보안상 카메라/mic/위치 노출요청 허옹/차단(FAIL)
+ 		북위 36-38, 영국의 중심으로 우리나라는 동경
+ */
+ let watchid;
+document.getElementById("start").onclick = function(){
+	//window.navigator.geolocation.watchPosition(function(){위치추적성공함수}, function(){위치추적실패함수}, {위치추적옵션});  // getCurrentPosition 1번
+	watchid = window.navigator.geolocation.watchPosition
+	(success, fail, {enableHighAccuracy : true, maximumAge : 10000, timeout : 5000}); 
+}
+
+document.getElementById("stop").onclick = function(){
+	//window.navigator.geolocation.clearWatch(현재 watchPosition객체)
+	window.navigator.geolocation.clearWatch(watchid);
+	document.getElementById("result").innerHTML = "<h3>위치 추적을 중답합니다</h3>";
+}
+
+function success(myposition){	//{"위도":37.xxx, "경도" : 127.xx} //latitude(위도), longitude(경도)
+	//위도, 경도
+	let lat = myposition.coords.latitude;
+	let lon = myposition.coords.longitude
+	document.getElementById("result").innerHTML = "나의 위치(위도)=" + lat + ",(경도)=" + lon;
+	window.open("https://www.google.co.kr/maps/?q=" + lat+ "," + lon, "구글맵", "width=800, height=600, resizable=yes");
+	window.open("https://map.naver.com/v5/?q=" + lat+ "," + lon, "네이버맵", "width=800, height=600, resizable=yes");
+	window.open("https://map.kakao.com/?q=" + lat+ "," + lon, "카카오맵", "width=800, height=600, resizable=yes");
+	
+}
+
+function fail(error){
+	//오류 메시지
+	document.getElementById("result").innerHTML = "오류발생=" + error.code + " 번 " + error.message; 
+}
+</script>
+</body>
+</html>
